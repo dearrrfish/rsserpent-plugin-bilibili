@@ -1,6 +1,8 @@
-# https://www.bilibili.com/read/cv13532660
+from typing import Any
 import random
 
+# Get random UA
+# https://www.bilibili.com/read/cv13532660
 USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
     "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
@@ -48,3 +50,19 @@ USER_AGENTS = [
 # 随机获取一个请求头
 def get_user_agent():
     return random.choice(USER_AGENTS)
+
+
+# embeded video
+def embed_video(disable_embed: Any, aid:int, page:str, bvid:str) -> str:
+    if disable_embed: return ''
+    return '<br><iframe src="https://player.bilibili.com/player.html?'
+    + (f"bvid={bvid}" if bvid else f"aid={aid}")
+    + (f"&page={page}" if page else "")
+    + '&high_quality=1"'
+    + ' width="650" height="477" scrolling="no" border="0" frameborder="no"'
+    + ' framespacing="0" allowfullscreen="true"></iframe>'
+
+bvidTime = 1589990400
+def get_video_link(created:int, aid:int, bvid:str) -> str:
+    vid = bvid if created > bvidTime and bvid else aid
+    return f"https://www.bilibili.com/video/{vid}"

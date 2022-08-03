@@ -3,7 +3,7 @@ from typing import Any, Dict
 import arrow
 from rsserpent.utils import HTTPClient, cached
 
-from ..random_ua import get_user_agent
+from ..utils import get_user_agent, get_video_link
 
 
 path = "/bilibili/user/{uid}/video"
@@ -25,7 +25,6 @@ async def provider(uid: int) -> Dict[str, Any]:
         user_info = (await client.get(user_info_api, headers=headers)).json()
         video_list = (await client.get(video_list_api, headers=headers)).json()
 
-    print(user_info)
     username = user_info["data"]["name"]
 
     return {
@@ -35,8 +34,8 @@ async def provider(uid: int) -> Dict[str, Any]:
         "items": [
             {
                 "title": item["title"],
-                "description": item["description"],
-                "link": f"https://www.bilibili.com/video/{item['bvid']}",
+                "description": f'<img src="{item["pic"]}" /><br><p>{item["description"]}</p>',
+                "link": get_video_link(item["created"], item["aid"], item["bvid"]),
                 "pub_date": arrow.get(item["created"]),
                 "author": username,
             }
