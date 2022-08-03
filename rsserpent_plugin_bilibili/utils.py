@@ -64,5 +64,5 @@ def embed_video(disable_embed: Any, aid:int, page:str, bvid:str) -> str:
 
 bvidTime = 1589990400
 def get_video_link(created:int, aid:int, bvid:str) -> str:
-    vid = bvid if created > bvidTime and bvid else aid
+    vid = bvid if created > bvidTime and bvid else f"av{aid}"
     return f"https://www.bilibili.com/video/{vid}"
