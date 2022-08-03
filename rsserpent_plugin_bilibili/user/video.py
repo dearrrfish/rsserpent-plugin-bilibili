@@ -3,6 +3,8 @@ from typing import Any, Dict
 import arrow
 from rsserpent.utils import HTTPClient, cached
 
+from ..random_ua import get_user_agent
+
 
 path = "/bilibili/user/{uid}/video"
 
@@ -16,10 +18,14 @@ async def provider(uid: int) -> Dict[str, Any]:
         "&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp"
     )
 
+    headers = {
+        'User-Agent': get_user_agent()
+    }
     async with HTTPClient() as client:
-        user_info = (await client.get(user_info_api)).json()
-        video_list = (await client.get(video_list_api)).json()
+        user_info = (await client.get(user_info_api, headers=headers)).json()
+        video_list = (await client.get(video_list_api, headers=headers)).json()
 
+    print(user_info)
     username = user_info["data"]["name"]
 
     return {
