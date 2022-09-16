@@ -19,7 +19,8 @@ async def provider(uid: int) -> Dict[str, Any]:
     )
 
     headers = {
-        'User-Agent': get_user_agent()
+        'User-Agent': get_user_agent(),
+        'Referer': f"https://space.bilibili.com/{uid}"
     }
     async with HTTPClient() as client:
         user_info = (await client.get(user_info_api, headers=headers)).json()
