@@ -1,4 +1,6 @@
-from typing import Any
+import time
+from typing import Dict, Any
+from rsserpent.utils import HTTPClient
 import random
 
 # Get random UA
@@ -41,8 +43,7 @@ USER_AGENTS = [
     "Openwave/ UCWEB7.0.2.37/28/999",
     "Mozilla/4.0 (compatible; MSIE 6.0; ) Opera/UCWEB7.0.2.37/28/999",
     # iPhone 6：
-	"Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25",
-
+    "Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25",
 ]
 
 # headers = {'User-Agent': random.choice(USER_AGENTS)}
@@ -53,16 +54,42 @@ def get_user_agent():
 
 
 # embeded video
-def embed_video(disable_embed: Any, aid:int, page:str, bvid:str) -> str:
-    if disable_embed: return ''
+def embed_video(disable_embed: Any, aid: int, page: str, bvid: str) -> str:
+    if disable_embed:
+        return ""
     return '<br><iframe src="https://player.bilibili.com/player.html?'
-    + (f"bvid={bvid}" if bvid else f"aid={aid}")
-    + (f"&page={page}" if page else "")
-    + '&high_quality=1"'
-    + ' width="650" height="477" scrolling="no" border="0" frameborder="no"'
-    + ' framespacing="0" allowfullscreen="true"></iframe>'
+    +(f"bvid={bvid}" if bvid else f"aid={aid}")
+    +(f"&page={page}" if page else "")
+    +'&high_quality=1"'
+    +' width="650" height="477" scrolling="no" border="0" frameborder="no"'
+    +' framespacing="0" allowfullscreen="true"></iframe>'
+
 
 bvidTime = 1589990400
-def get_video_link(created:int, aid:int, bvid:str) -> str:
+
+
+def get_video_link(created: int, aid: int, bvid: str) -> str:
     vid = bvid if created > bvidTime and bvid else f"av{aid}"
     return f"https://www.bilibili.com/video/{vid}"
+
+
+async def get_api(url: str, max_retries=5, retry_delay=3) -> Dict[str, Any]:
+    retries = 0
+    data = {}
+    while retries < max_retries:
+        if retries > 0:
+            time.sleep(retry_delay)
+        try:
+            headers = {
+                "User-Agent": get_user_agent(),
+                "Referer": f"https://space.bilibili.com/",
+            }
+            async with HTTPClient() as client:
+                data = (await client.get(url, headers=headers)).json()
+
+            if data["code"] == 0:
+                return data
+            retries += 1
+        except:
+            retries += 1
+    return data

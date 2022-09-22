@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
 import arrow
-from rsserpent.utils import HTTPClient, cached
+from rsserpent.utils import cached
 
-from ..utils import get_user_agent, get_video_link
+from ..utils import get_video_link, get_api
 
 
 path = "/bilibili/user/{uid}/video"
@@ -13,20 +13,14 @@ path = "/bilibili/user/{uid}/video"
 async def provider(uid: int) -> Dict[str, Any]:
     """订阅 up 上传的最新视频."""
     user_info_api = f"https://api.bilibili.com/x/space/acc/info?mid={uid}&jsonp=jsonp"
+    user_info = await get_api(user_info_api)
+    username = user_info["data"]["name"]
+
     video_list_api = (
         f"https://api.bilibili.com/x/space/arc/search?mid={uid}&ps=30"
         "&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp"
     )
-
-    headers = {
-        'User-Agent': get_user_agent(),
-        'Referer': f"https://space.bilibili.com/{uid}"
-    }
-    async with HTTPClient() as client:
-        user_info = (await client.get(user_info_api, headers=headers)).json()
-        video_list = (await client.get(video_list_api, headers=headers)).json()
-
-    username = user_info["data"]["name"]
+    video_list = await get_api(video_list_api)
 
     return {
         "title": f"{username}的最新投稿视频",
