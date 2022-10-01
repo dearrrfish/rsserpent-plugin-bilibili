@@ -3,7 +3,7 @@ from typing import Any, Dict
 import arrow
 from rsserpent.utils import cached
 
-from ..utils import get_video_link, get_api
+from ..utils import get_api, get_user_info, get_video_link
 
 
 path = "/bilibili/user/{uid}/video"
@@ -12,8 +12,7 @@ path = "/bilibili/user/{uid}/video"
 @cached
 async def provider(uid: int) -> Dict[str, Any]:
     """订阅 up 上传的最新视频."""
-    user_info_api = f"https://api.bilibili.com/x/space/acc/info?mid={uid}&jsonp=jsonp"
-    user_info = await get_api(user_info_api)
+    user_info = await get_user_info(uid)
     username = user_info["data"]["name"]
 
     video_list_api = (
@@ -29,9 +28,11 @@ async def provider(uid: int) -> Dict[str, Any]:
         "items": [
             {
                 "title": item["title"],
-                "description": f'<img src="{item["pic"]}" /><br><p>{item["description"]}</p>',
+                "description": (
+                    f'<img src="{item["pic"]}" /><br><p>{item["description"]}</p>'
+                ),
                 "link": get_video_link(item["created"], item["aid"], item["bvid"]),
-                "pub_date": arrow.get(item["created"]),
+                "pub_date": arrow.get(item["created"]).format(),
                 "author": username,
             }
             for item in video_list["data"]["list"]["vlist"]

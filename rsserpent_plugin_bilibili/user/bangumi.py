@@ -45,7 +45,7 @@ async def provider_base(uid: int, typea: Dict[str, Any]) -> Dict[str, Any]:
                     item["new_ep"]["pub_time"]
                     if len(item["new_ep"]) > 1
                     else item["publish"]["pub_time"]
-                ),
+                ).format(),
             }
             for item in bangumi_list["data"]["list"]
             if len(item["new_ep"])

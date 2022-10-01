@@ -1,11 +1,12 @@
 from typing import Any, Dict, Optional
 
-from rsserpent.utils import HTTPClient
+from rsserpent.utils import HTTPClient, cached
 
 
 HTTPX_CLIENT: Optional[HTTPClient] = None
 BILIBILI_COOKIES: Optional[Dict[str, Any]] = None
 BVID_TIME = 1589990400
+USER_INFO_CACHE_EXPIRE = 60 * 60 * 24
 
 
 # embedded video
@@ -73,3 +74,11 @@ async def get_api(url: str) -> Dict[str, Any]:
     data = (await client.get(url, headers=headers)).json()
     await reset_client()
     return data
+
+
+@cached
+async def get_user_info(uid: int) -> Dict[str, Any]:
+    """Cached request fetching user info."""
+    return await get_api(
+        f"https://api.bilibili.com/x/space/acc/info?mid={uid}&jsonp=jsonp"
+    )
