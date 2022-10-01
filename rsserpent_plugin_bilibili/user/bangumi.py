@@ -3,8 +3,6 @@ from typing import Any, Dict
 import arrow
 from rsserpent.utils import HTTPClient, cached
 
-from ..utils import get_user_agent
-
 
 path = "/bilibili/user/{uid}/bangumi"
 
@@ -25,8 +23,7 @@ async def provider_base(uid: int, typea: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     headers = {
-        'User-Agent': get_user_agent(),
-        'Referer': f"https://space.bilibili.com/{uid}"
+        "Referer": f"https://space.bilibili.com/{uid}",
     }
 
     async with HTTPClient() as client:
