@@ -26,6 +26,10 @@ requests = "^2.26.0"
 [tool.poetry.plugins."rsserpent.plugin"]
 "bilibili" = "rsserpent_plugin_bilibili:plugin"
 
+
+[tool.poetry.group.dev.dependencies]
+black = {version = "^22.10.0", allow-prereleases = true}
+
 [tool.black]
 include = '\.pyi?$'
 target-version = ["py37"]
