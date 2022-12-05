@@ -74,7 +74,7 @@ async def get_api(url: str) -> Dict[str, Any]:
     data = (await client.get(url, headers=headers)).json()
     await reset_client()
 
-    if "code" in data and data.code is not 0:
+    if "code" in data and data["code"] is not 0:
         raise Exception(f"invalid response for `{url}`")
 
     return data
